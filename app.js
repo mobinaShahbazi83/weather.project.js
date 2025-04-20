@@ -5,6 +5,7 @@ const BASE_URL = "http://api.openweathermap.org/data/2.5"
 const searchInput = document.querySelector("input")
 const searchButton = document.querySelector("button")
 const weatherCountry = document.getElementById("weather")
+const locationIcon = document.getElementById("location")
 
 
 const getCurrentWeatherByName =async (city) => {
@@ -14,6 +15,28 @@ const getCurrentWeatherByName =async (city) => {
     return json;
 }
 
+const getCurrentWeatherByCoordinates = async (lat, lon) => {
+    const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+    const res = await fetch(url);
+     const json = await res.json();
+     return json;
+}
+const positionCallback = async(position) => {
+const {latitude, longitude} = position.coords;
+const currentData = await getCurrentWeatherByCoordinates(latitude, longitude)
+renderCurrentWeather(currentData);
+}
+
+const errorCallback = (error) => {
+    console.log(error.message)
+}
+const locationHandler = () => {
+    if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(positionCallback, errorCallback)
+    } else {
+        alert("Your browser dose not suppot geolocation")
+    }
+}
 
 const renderCurrentWeather = (data) => {
 const weatherJSX =`
@@ -42,3 +65,4 @@ const searchHandler = async () => {
 
 }
 searchButton.addEventListener("click", searchHandler) 
+locationIcon.addEventListener("click", locationHandler)
