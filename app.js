@@ -1,3 +1,5 @@
+import getWeatherData from "./utils/httpReq.js";
+
 const API_KEY = "2a07d2f3fe66616a5b944cbe7498902f";
 
 const BASE_URL = "http://api.openweathermap.org/data/2.5";
@@ -18,31 +20,12 @@ const weatherCountry = document.getElementById("weather");
 const locationIcon = document.getElementById("location");
 const forecastCountry = document.getElementById("forecast");
 
-const getCurrentWeatherByName = async (city) => {
-  const url = `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric`;
-  const res = await fetch(url);
-  const json = await res.json();
-  return json;
-};
-
-const getCurrentWeatherByCoordinates = async (lat, lon) => {
-  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
-  const res = await fetch(url);
-  const json = await res.json();
-  return json;
-};
-
-const getForecastWeatherByName = async (city) => {
-  const url = `${BASE_URL}/forecast?q=${city}&appid=${API_KEY}&units=metric`;
-  const res = await fetch(url);
-  const json = await res.json();
-  return json;
-};
 
 const positionCallback = async (position) => {
-  const { latitude, longitude } = position.coords;
-  const currentData = await getCurrentWeatherByCoordinates(latitude, longitude);
-  renderCurrentWeather(currentData);
+  const currentData = await getWeatherData( "current",position.coords);
+ getWeatherData(currentData);
+  const forecastData = await getWeatherData( "forecast",position.coords);
+  renderForecastWeather(forecastData)
 };
 
 const errorCallback = (error) => {
@@ -79,6 +62,7 @@ const getWeekDay = (date) => {
     return DAYS[new Date(date * 1000).getDay()]
 }
 const renderForecastWeather = (data) => {
+    forecastCountry.innerHTML = "";
   data = data.list.filter((obj) => obj.dt_txt.endsWith("12:00:00"));
   data.forEach((i) => {
     const firecastJSX = `
@@ -102,9 +86,9 @@ const searchHandler = async () => {
     alert("please enter city name!");
   }
 
-  const currentData = await getCurrentWeatherByName(cityName);
+  const currentData = await getWeatherData("current",cityName);
   renderCurrentWeather(currentData);
-  const forecastData = await getForecastWeatherByName(cityName);
+  const forecastData = await getWeatherData( "forecast",cityName);
   renderForecastWeather(forecastData);
 };
 searchButton.addEventListener("click", searchHandler);
