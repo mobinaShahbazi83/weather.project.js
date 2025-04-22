@@ -23,7 +23,7 @@ const getWeatherData = async (type, data) => {
       }
       break;
     default:
-      url = `${BASE_URL}/weather?q=zanjan&APPID=${API_KEY}&units=metric`;
+      url = `${BASE_URL}/weather?q=tehran&APPID=${API_KEY}&units=metric`;
       break;
   }
 

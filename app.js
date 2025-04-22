@@ -1,3 +1,4 @@
+import { getWeekDay } from "./utils/customeDate.js";
 import getWeatherData from "./utils/httpReq.js";
 import { removeModal, showModal } from "./utils/modal.js";
 
@@ -5,15 +6,7 @@ const API_KEY = "2a07d2f3fe66616a5b944cbe7498902f";
 
 const BASE_URL = "http://api.openweathermap.org/data/2.5";
 
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Tursday",
-  "Friday",
-  "Saturday",
-];
+
 
 const searchInput = document.querySelector("input");
 const searchButton = document.querySelector("button");
@@ -27,12 +20,19 @@ const positionCallback = async (position) => {
   const currentData = await getWeatherData( "current",position.coords);
  getWeatherData(currentData);
   const forecastData = await getWeatherData( "forecast",position.coords);
-  renderForecastWeather(forecastData)
+  getWeatherData(forecastData)
 };
 
 const errorCallback = (error) => {
   showModal(error.message);
 };
+
+const initHandler =async () => {
+    const currentData = await getWeatherData("current","tehran");
+    renderCurrentWeather(currentData);
+    const forecastData = await getWeatherData( "forecast", "tehran");
+    renderForecastWeather(forecastData);
+}
 const locationHandler = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(positionCallback, errorCallback);
@@ -62,9 +62,7 @@ const renderCurrentWeather = (data) => {
   weatherCountry.innerHTML = weatherJSX;
 };
 
-const getWeekDay = (date) => {
-    return DAYS[new Date(date * 1000).getDay()]
-}
+
 const renderForecastWeather = (data) => {
     if(!data) return;
     forecastCountry.innerHTML = "";
@@ -99,3 +97,4 @@ const searchHandler = async () => {
 searchButton.addEventListener("click", searchHandler);
 locationIcon.addEventListener("click", locationHandler);
 modalButon.addEventListener("click", removeModal)
+document.addEventListener("DOMContentLoaded", initHandler)
